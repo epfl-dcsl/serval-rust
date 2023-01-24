@@ -1,0 +1,141 @@
+; DO NOT MODIFY.
+;
+; This file was automatically generated.
+
+#lang rosette
+
+(provide (all-defined-out))
+
+(require (prefix-in core: serval/lib/core)
+         
+         serval/llvm
+         serval/ubsan)
+
+(define-global @vtable.0)
+(define-global @alloc11)
+(define-global @alloc12)
+(define-global @str.1)
+(define-global @__rustc_debug_gdb_scripts_section__)
+
+
+(define (@_ZN3std3sys4unix7process14process_common8ExitCode6as_i3217hd8548e542aeb5c76E %self)
+; %start
+  (define-label (%start) #:merge #f
+    (set! %self.dbg.spill (alloca (core:mcell 8) #:align 8))
+    (store %self %self.dbg.spill pointer #:align 8)
+    (set! %_2 (load %self (bitvector 8) #:align 1))
+    (set! %0 (zext %_2 (bitvector 32)))
+    (ret %0))
+
+  (define-value %self.dbg.spill)
+  (define-value %_2)
+  (define-value %0)
+  (enter! %start))
+
+(define (@_ZN3std7process8ExitCode6to_i3217h5aaeffbdc10ce5e4E %0)
+; %start
+  (define-label (%start) #:merge #f
+    (set! %self (alloca (core:mcell 1) #:align 1))
+    (store %0 %self (bitvector 8) #:align 1)
+    (set! %1 (call @_ZN3std3sys4unix7process14process_common8ExitCode6as_i3217hd8548e542aeb5c76E %self))
+    (br %bb1))
+
+; %bb1
+  (define-label (%bb1) #:merge #f
+    (ret %1))
+
+  (define-value %self)
+  (define-value %1)
+  (enter! %start))
+
+(define (@_ZN4core3ops8function6FnOnce9call_once17h3e0dc62b4a1ca1ddE %_1)
+; %start
+  (define-label (%start) #:merge #f
+    (set! %_1.dbg.spill (alloca (core:mcell 8) #:align 8))
+    (set! %_2 (alloca (core:mstruct 0 (list)) #:align 1))
+    (store %_1 %_1.dbg.spill pointer #:align 8)
+    (call %_1)
+    (br %bb1))
+
+; %bb1
+  (define-label (%bb1) #:merge #f
+    (ret))
+
+  (define-value %_1.dbg.spill)
+  (define-value %_2)
+  (enter! %start))
+
+(define (@_ZN4core3ptr85drop_in_place$LT$std..rt..lang_start$LT$$LP$$RP$$GT$..$u7b$$u7b$closure$u7d$$u7d$$GT$17h45b5045f63e1036eE %_1)
+; %start
+  (define-label (%start) #:merge #f
+    (set! %_1.dbg.spill (alloca (core:mcell 8) #:align 8))
+    (store %_1 %_1.dbg.spill pointer #:align 8)
+    (ret))
+
+  (define-value %_1.dbg.spill)
+  (enter! %start))
+
+(define (@_ZN4core4hint9black_box17h7347c85f218e334cE)
+; %start
+  (define-label (%start) #:merge #f
+    (set! %dummy.dbg.spill (alloca (core:mstruct 0 (list)) #:align 1))
+    (asm 'nop (undef pointer))
+    (br %bb1))
+
+; %bb1
+  (define-label (%bb1) #:merge #f
+    (ret))
+
+  (define-value %dummy.dbg.spill)
+  (enter! %start))
+
+
+(define (@_ZN10rusty_risc4test17hf0ecfa62e6bc4458E %x %y)
+; %start
+  (define-label (%start) #:merge #f
+    (set! %r.dbg.spill (alloca (core:mcell 4) #:align 4))
+    (set! %y.dbg.spill (alloca (core:mcell 4) #:align 4))
+    (set! %x.dbg.spill (alloca (core:mcell 4) #:align 4))
+    (store %x %x.dbg.spill (bitvector 32) #:align 4)
+    (store %y %y.dbg.spill (bitvector 32) #:align 4)
+    (set! %0 (call llvm.uadd.with.overflow.i32 %x %y))
+    (set! %_5.0 (extractvalue %0 0))
+    (set! %_5.1 (extractvalue %0 1)))
+
+; %bb1
+  (define-label (%bb1) #:merge #f
+    (store %_5.0 %r.dbg.spill (bitvector 32) #:align 4)
+    (ret %_5.0))
+
+
+  (define-value %r.dbg.spill)
+  (define-value %y.dbg.spill)
+  (define-value %x.dbg.spill)
+  (define-value %0)
+  (define-value %_5.0)
+  (define-value %_5.1)
+  (define-value %1)
+  (enter! %start))
+
+(define (@_ZN10rusty_risc4main17hb247286f2533182aE)
+; %start
+  (define-label (%start) #:merge #f
+    (set! %_c.dbg.spill (alloca (core:mcell 4) #:align 4))
+    (set! %b.dbg.spill (alloca (core:mcell 4) #:align 4))
+    (set! %a.dbg.spill (alloca (core:mcell 4) #:align 4))
+    (store (bv #x0000000a 32) %a.dbg.spill (bitvector 32) #:align 4)
+    (store (bv #x00000005 32) %b.dbg.spill (bitvector 32) #:align 4)
+    (set! %_c (call @_ZN10rusty_risc4test17hf0ecfa62e6bc4458E (bv #x0000000a 32) (bv #x00000005 32)))
+    (store %_c %_c.dbg.spill (bitvector 32) #:align 4)
+    (br %bb1))
+
+; %bb1
+  (define-label (%bb1) #:merge #f
+    (ret))
+
+  (define-value %_c.dbg.spill)
+  (define-value %b.dbg.spill)
+  (define-value %a.dbg.spill)
+  (define-value %_c)
+  (enter! %start))
+

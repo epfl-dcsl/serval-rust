@@ -1,0 +1,85 @@
+#lang rosette
+
+(require (except-in rackunit fail)
+         rackunit/text-ui
+         rosette/lib/roseunit
+         (prefix-in llvm: serval/llvm)
+         serval/lib/unittest
+         serval/lib/core)
+         
+
+
+(require "generated/racket/test/udiv.ll.rkt")
+
+(define-symbolic x y i32)
+
+(define (check-udiv x y result)
+  (check-equal? (@udiv (bv x i32) (bv y i32)) (bv result i32)))
+
+(define (check-udiv-concrete)
+  (check-udiv 1 5 0)
+  (check-udiv 42 5 8)
+  (check-true (vc-true? (vc))))
+
+(define (spec-udiv x y)
+  (if (bvzero? y) (bv 0 i32) (bvudiv x y)))
+
+(define (check-udiv-symbolic)
+  (assume (bvugt y (bv 0 i32)))
+  (print (vc))
+  (check-equal? (@udiv x y) (bvudiv x y))
+  (check-true (vc-true? (vc))))
+
+(define (call-maxa a b)
+  (assume (bvugt a b))
+  (define r (@max a b))
+  (assert (bveq r a))
+  )
+
+(define (call-maxb a b)
+  (assume (bvugt b a))
+  (define r (@max a b))
+  (assert (bveq r b))
+  )
+
+(define (call-maxe a b)
+  (assume (bveq b a))
+  (define r (@max a b))
+  (assert (bveq r b))
+  (assert (bveq r a))
+  )
+
+(define (call-max a b)
+  (define r (@max a b))
+  (assert (if (bvugt a b) (bveq r a) (bveq r b)))
+  )
+
+
+(define (call-sum a b)
+  ;(assume (bvult a (bv 10000000 i32)))
+  ;(assume (bvult b (bv 10000000 i32)))
+  (define r (@sum a b))
+  (assert (bveq r (bvadd b a)))
+  )
+
+(define (check-function2 f x y)
+  (define r (verify (f x y)))  
+  (assert (unsat? r) r)
+  )
+
+(define udiv-tests
+  (test-suite+
+   "Tests for udiv.c"
+
+   (parameterize ([llvm:current-machine (llvm:make-machine)])
+     (test-case+ "udiv-concrete" (check-udiv-concrete))
+     ;(test-case+ "udiv-symbolic" (check-udiv-symbolic))
+     (test-case+ "max a" (check-function2 call-maxa x y))
+     (test-case+ "max b" (check-function2 call-maxb x y))
+     (test-case+ "max e" (check-function2 call-maxe x y))
+     (test-case+ "max" (check-function2 call-max x y))
+     (test-case+ "sum" (check-function2 call-sum x y))
+)))
+
+(module+ test
+  (time (run-tests udiv-tests)))

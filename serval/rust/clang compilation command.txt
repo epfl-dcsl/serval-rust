@@ -1,0 +1,4 @@
+/usr/lib/llvm-14/bin/clang 
+-target x86_64-pc-linux-gnu 
+-g -o o.riscv64/udiv.ll 
+-mno-sse -S -emit-llvm -fno-discard-value-names -fsanitize=integer-divide-by-zero -fsanitize=shift -fsanitize=signed-integer-overflow -Wno-unused-command-line-argument -I include -ffreestanding -fno-stack-protector -fno-strict-aliasing -fno-jump-tables -mstrict-align -O2 -Wall -MD -MP -mno-relax -DCONFIG_DRAM_START=0x80000000 -DCONFIG_VERIFICATION_LLVM -c udiv.c

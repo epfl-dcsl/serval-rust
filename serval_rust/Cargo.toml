@@ -1,0 +1,24 @@
+[package]
+name = "serval_rust"
+version = "0.1.0"
+edition = "2021"
+
+
+[lib]
+name="serval_rust"
+crate-type = ["cdylib"]
+
+
+[profile.release]
+debug = true
+opt-level = 0
+
+#panic = "abort"
+#lto = true
+#strip = true
+
+[dependencies]
+macros_lib = { path = "macros_lib" }
+
+[workspace]
+members=["verify_expand"]

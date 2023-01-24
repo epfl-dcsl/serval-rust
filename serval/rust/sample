@@ -1,0 +1,48 @@
+
+ 
+#lang rosette
+
+(require (except-in rackunit fail)
+         rackunit/text-ui
+         rosette/lib/roseunit
+         (prefix-in llvm: serval/llvm)
+         serval/lib/unittest
+         serval/lib/core)
+
+
+(require rosette/lib/value-browser)
+(require "gen/sumrust.map.rkt"
+         "gen/sumrust.globals.rkt")
+(require "gen/sumrust.code.rkt")
+
+(define-symbolic x y i32)
+
+
+
+
+(define (check-function0 f )
+    (define r (verify (f)))
+    (assert (unsat? r) r)
+)
+
+
+
+
+(define (sum_array)
+    (define-symbolic a)
+(define r (@sum_array a ))
+(println r)
+)
+
+
+
+
+(define rust-tests
+    (test-suite+
+     "Tests sum_array"
+    (parameterize ([llvm:current-machine (llvm:make-machine symbols globals)])
+        
+        (test-case+ "sum_array" (check-function0 sum_array))
+
+    )))
+

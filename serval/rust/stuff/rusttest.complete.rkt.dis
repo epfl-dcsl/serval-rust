@@ -1,0 +1,60 @@
+; DO NOT MODIFY.
+;
+; This file was automatically generated.
+
+#lang rosette
+
+(provide (all-defined-out))
+
+(require (prefix-in core: serval/lib/core)
+
+         (except-in serval/llvm trunc)
+         serval/lib/bvarith
+         serval/ubsan)
+
+
+
+(define (@test %x %y)
+; %start
+  (define-label (%start) #:merge #f
+  (assert (bvult %x (bv 10000000 i32)) "x<10000000")
+  (assert (bvult %y (bv 10000000 i32)))
+
+
+    (set! %r (add %x %y))
+    (ret %r))
+
+  (define-value %r)
+  (enter! %start))
+
+(define (@double_sum %x %y)
+; %start
+  (define-label (%start) #:merge #f
+    (set! %_3 (call @test %x %x))
+    (br %bb1))
+
+; %bb1
+  (define-label (%bb1) #:merge #f
+    (set! %_6 (call @test %y %y))
+    (br %bb2))
+
+; %bb2
+  (define-label (%bb2) #:merge #f
+    (set! %0 (add %_3 %_6))
+    (ret %0))
+
+  (define-value %_3)
+  (define-value %_6)
+  (define-value %0)
+  (enter! %start))
+
+(define (@rust_begin_unwind %_info)
+; %start
+  (define-label (%start) #:merge #f
+    (br %bb1))
+
+; %bb1
+  (define-label (%bb1) #:merge #f
+    (br %bb1))
+
+  (enter! %start))

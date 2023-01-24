@@ -1,0 +1,102 @@
+#lang rosette
+
+(require (except-in rackunit fail)
+         rackunit/text-ui
+         rosette/lib/roseunit
+         (prefix-in llvm: serval/llvm)
+         serval/lib/unittest
+         serval/lib/core)
+
+
+(require rosette/lib/value-browser)
+(require "gen/sumrust.map.rkt"
+         "gen/sumrust.globals.rkt")
+
+(require "gen/sumrust.code.rkt")
+
+(define-symbolic x y i32)
+
+
+
+(define (call-sum a b)
+  (assume (bvult a (bv 10000000 i32)))
+  (assume (bvult b (bv 10000000 i32)))
+  (define r (@test a b))
+  (assert (bveq r (bvadd b a))) "r==b-a")
+
+(define (call-double-sum a b)
+  ; (assume (bvult a (bv 10000000 i32)))
+  ; (assume (bvult b (bv 10000000 i32)))
+  (define r (@double_sum a b))
+
+  (cond
+  [(and (bvuge a (bv 10000000 i32)) (bvuge b (bv 10000000 i32))) (assert (bveq r (bv 0 i32)))]
+  [(and (bvuge a (bv 10000000 i32)) (bvult b (bv 10000000 i32))) (assert (bveq r (bvmul b (bv 2 i32))))]
+  [(and (bvult a (bv 10000000 i32)) (bvuge b (bv 10000000 i32))) (assert (bveq r (bvmul a (bv 2 i32))))]
+  [#t (assert (bveq r (bvmul (bvadd b a) (bv 2 i32))))])
+)
+
+(define-symbolic v i64)
+
+(define (test-array-sum)
+  (@init_array)
+
+  (define expected-result (bv 0 i64))
+  (define b0 (llvm:symbol->block 'array_to_sum_2))
+  (for ([i 5])
+    (define current-val (zero-extend (mblock-iload b0 (list (bv i i64))) i64))
+    (set! expected-result (bvadd expected-result current-val))
+  )
+
+  (define r (@sum_array))
+  (println r)
+  (println expected-result)
+  (assert (bveq r expected-result))
+)
+
+(define (test-equality)
+  (define-symbolic a i32)
+  (define-symbolic b i32)
+
+  (define r (@equality a b))
+  (define l (forall (var a b) (=> (bveq a b) (bveq r (bv 1 i8)))))
+
+  (println l)
+  (assert l)
+
+  (println r)
+)
+
+
+
+(define (check-function2 f x y)
+  (define r (verify (f x y)))
+  (assert (unsat? r) r))
+
+
+(define (check-function1 f x)
+  (define r (verify (f x)))
+  (assert (unsat? r) r)
+  )
+
+  (define (check-function0 f )
+  (define r (verify (f)))
+  (assert (unsat? r) r)
+  )
+
+
+;      (test-case+ "double sum" (check-function2 call-double-sum x y))
+
+
+(define rust-tests
+  (test-suite+
+   "Tests for rust functions (simple)"
+   (parameterize ([llvm:current-machine (llvm:make-machine symbols globals)])
+   (test-case+ "sum" (check-function2 call-sum x y))
+   (test-case+ "sum double" (check-function2 call-double-sum x y))
+   (test-case+ "sum array" (check-function0 test-array-sum))
+   (test-case+ "equality" (check-function0 test-equality))
+   )))
+
+(module+ test
+  (time (run-tests rust-tests)))

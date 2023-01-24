@@ -1,0 +1,48 @@
+#lang rosette
+
+(require (except-in rackunit fail)
+         rackunit/text-ui
+         rosette/lib/roseunit
+         (prefix-in llvm: serval/llvm)
+         serval/lib/unittest
+         serval/lib/core)
+
+
+(require "generated/racket/test/mytest.ll.rkt")
+
+
+(define (check-func x result)
+  (check-equal? (@func (bv x i32)) (bv result i32)))
+
+(define (check-udiv x y #:result [result (/ x 4)])
+  (check-equal? (@func (bv x i32)) (bv result i32))
+  )
+
+(define-symbolic x y i32)
+
+
+
+
+(define (check-array-symbolic)
+  
+  (check-equal? (@func (bv 10 i32)) (bv 2 i32))
+  (check-equal? (@func x) (/ x 4))
+  (check-true (vc-true? (vc)))
+)
+
+(define (check-udiv-concrete)
+  (check-equal?
+   (@func (bv 10 i32))
+   (bv 6 i32)
+   )
+  (check-true (vc-true? (vc))))
+
+(define array-tests
+  (test-suite+
+   "My tests"
+   (test-case+ "check func conc" (check-udiv-concrete))
+   )
+  )
+
+(module+ test
+  (time (run-tests array-tests)))
